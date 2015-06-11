@@ -17,9 +17,10 @@ class Copter(Changeable, ObstacleDetector, OtherCopterDetector):
         self.sensor = sensor
 
     def update(self):
-        other_copters, obstacle_closest_points = self.collect_visible_objects()
+        other_copters_closest_points, obstacle_closest_points = self.collect_visible_objects()
         super().on_obstacles_update(obstacle_closest_points)
-        self.position = self.behaviour.update(self.position, other_copters, obstacle_closest_points)
+        super().on_other_copters_update(other_copters_closest_points)
+        self.position = self.behaviour.update(self.position, other_copters_closest_points, obstacle_closest_points)
         super().on_change()
 
     def set_behaviour(self, behaviour):
