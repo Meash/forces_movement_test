@@ -1,5 +1,6 @@
 from ui.CopterDrawer import CopterDrawer
 from ui.ObstaclesDrawer import ObstaclesDrawer
+from ui.OtherCoptersDrawer import OtherCoptersDrawer
 
 __author__ = 'Martin'
 
@@ -11,3 +12,5 @@ class CopterUi:
         copter.add_change_listener(copter_drawer)
         obstacles_drawer = ObstaclesDrawer(canvas)
         copter.add_obstacle_listener(obstacles_drawer)
+        other_copters_drawer = OtherCoptersDrawer(canvas)
+        copter.add_other_copters_listener(other_copters_drawer)
