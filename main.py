@@ -1,7 +1,7 @@
 from Looper import Looper
 from copter.Copter import Copter
 from copter.CopterSwarm import CopterSwarm
-from copter.behaviour.MoveNorthEastBehaviour import MoveNorthEastBehaviour
+from copter.behaviour.FleeFromEverythingBehaviour import FleeFromEverythingBehaviour
 from copter.positioning.Boundary import Boundary
 from copter.sensors.SensorMock import SensorMock
 from geometry.Position import Position
@@ -16,7 +16,7 @@ class Main:
     BOUNDARY_WIDTH = 400
     HEIGHT = 250
 
-    SWARM_SIZE = 3
+    SWARM_SIZE = 1
 
     SENSOR_RANGE = 50
 
@@ -32,7 +32,7 @@ class Main:
         self.__init_ui(boundary, copters)
 
     def __create_copters(self, amount, boundary):
-        behaviour = MoveNorthEastBehaviour()
+        behaviour = FleeFromEverythingBehaviour()
         sensor = None
         copters = []
 
