@@ -1,6 +1,5 @@
-from random import random
-
 from copter.behaviour.Behaviour import Behaviour
+from copter.behaviour.RandomDirectionBehaviour import RandomDirectionBehaviour
 from geometry.Point import Point
 
 __author__ = 'Martin'
@@ -8,8 +7,7 @@ __author__ = 'Martin'
 
 class FleeFromEverythingBehaviour(Behaviour):
     def __init__(self):
-        self.modifier_x = 1
-        self.modifier_y = 1
+        self.no_threat_behaviour = RandomDirectionBehaviour()
 
     def update(self, current_position, other_copters, obstacles):
         new_position_x = current_position.x
@@ -23,12 +21,9 @@ class FleeFromEverythingBehaviour(Behaviour):
             count += 1
 
         if count == 1:
-            self.modifier_x = -1 if random() < 0.5 - self.modifier_x * 0.35 else +1
-            self.modifier_y = -1 if random() < 0.5 - self.modifier_y * 0.35 else +1
-            return Point(current_position.x + (random() * 10) * self.modifier_x,
-                            current_position.y + random() * 10 * self.modifier_y)
+            return self.no_threat_behaviour.update(current_position, other_copters, obstacles)
         new_position = Point(new_position_x / count,
-                                new_position_y / count)
-        self.modifier_x = 1 if new_position.x > current_position.x else -1
-        self.modifier_y = 1 if new_position.y > current_position.y else -1
+                             new_position_y / count)
+        self.no_threat_behaviour.modifier_x = 1 if new_position.x > current_position.x else -1
+        self.no_threat_behaviour.modifier_y = 1 if new_position.y > current_position.y else -1
         return new_position
