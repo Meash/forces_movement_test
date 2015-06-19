@@ -1,7 +1,7 @@
 from random import random
 
 from copter.behaviour.Behaviour import Behaviour
-from geometry.Position import Position
+from geometry.Point import Point
 
 __author__ = 'Martin'
 
@@ -25,9 +25,9 @@ class FleeFromEverythingBehaviour(Behaviour):
         if count == 1:
             self.modifier_x = -1 if random() < 0.5 - self.modifier_x * 0.35 else +1
             self.modifier_y = -1 if random() < 0.5 - self.modifier_y * 0.35 else +1
-            return Position(current_position.x + (random() * 10) * self.modifier_x,
+            return Point(current_position.x + (random() * 10) * self.modifier_x,
                             current_position.y + random() * 10 * self.modifier_y)
-        new_position = Position(new_position_x / count,
+        new_position = Point(new_position_x / count,
                                 new_position_y / count)
         self.modifier_x = 1 if new_position.x > current_position.x else -1
         self.modifier_y = 1 if new_position.y > current_position.y else -1
