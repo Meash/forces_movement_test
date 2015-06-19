@@ -12,6 +12,7 @@ class Copter(Changeable, ObstacleDetector, OtherCopterDetector):
         OtherCopterDetector.__init__(self)
         self.behaviour = behaviour
         self.size = 10
+        self.speed = 5
         self.position = position
         self.boundary = boundary
         self.sensor = sensor
@@ -20,7 +21,11 @@ class Copter(Changeable, ObstacleDetector, OtherCopterDetector):
         other_copters_closest_points, obstacle_closest_points = self.collect_visible_objects()
         super().on_obstacles_update(obstacle_closest_points)
         super().on_other_copters_update(other_copters_closest_points)
-        self.position = self.behaviour.update(self.position, other_copters_closest_points, obstacle_closest_points)
+        direction = self.behaviour.update(self.position, other_copters_closest_points, obstacle_closest_points)
+        modifier_x = +1 if direction.x > self.position.x else -1
+        modifier_y = +1 if direction.y > self.position.y else -1
+        self.position.x += self.speed * modifier_x
+        self.position.y += self.speed * modifier_y
         super().on_change()
 
     def set_behaviour(self, behaviour):
