@@ -1,6 +1,7 @@
-from sympy.geometry import *
-
 from copter.sensors.Sensor import Sensor
+from geometry.Circle import Circle
+from geometry.Line import Line
+from geometry.Point import Point
 
 __author__ = 'Martin'
 
@@ -12,34 +13,29 @@ class SensorMock(Sensor):
         self.other_copters = other_copters
 
     def collect_obstacles_closest_points(self, position):
-        vision_area = Circle(Point(position.x, position.y), self.sensor_range)
-        return self.get_closest_points(vision_area, self.boundary_lines)
-
-    @staticmethod
-    def get_closest_points(vision_area, entities):
-        closest_points = []
-        for entity in entities:
-            intersecting_points = vision_area.intersection(entity)
-            if len(intersecting_points) == 1:
-                closest_points.append(intersecting_points[0])
-            elif len(intersecting_points) == 2:
-                center = (intersecting_points[0] + intersecting_points[1]) / 2
-                closest_points.append(center)
-        return closest_points
+        return self.get_closest_points(position, self.boundary_lines)
 
     def collect_other_copters_closest_points(self, position):
-        position_point = Point(position.x, position.y)
         other_copters_circles = self.get_copters_circles(self.other_copters)
+        return self.get_closest_points(position, other_copters_circles)
+
+    def get_closest_points(self, position, entities):
+        vision_area = Circle(Point(position.x, position.y), self.sensor_range)
         closest_points = []
-        for other_copter_circle in other_copters_circles:
-            # use line connection since vision_area could overlap with other copter,
-            # without intersecting with it
-            connection = Line(position_point, other_copter_circle.center)
-            intersecting_points = connection.intersection(other_copter_circle)
-            closest_point = intersecting_points[0]
-            if position_point.distance(closest_point) <= self.sensor_range:
+        for entity in entities:
+            closest_point = self.get_closest_point(vision_area, entity)
+            if closest_point is not None:
                 closest_points.append(closest_point)
         return closest_points
+
+    @staticmethod
+    def get_closest_point(vision_area, entity):
+        intersecting_points = vision_area.intersection(entity)
+        if len(intersecting_points) == 1:
+            return intersecting_points[0]
+        elif len(intersecting_points) == 2:
+            return (intersecting_points[0] + intersecting_points[1]) / 2
+        return None
 
     @staticmethod
     def get_boundary_lines(boundary):
