@@ -19,10 +19,8 @@ class OtherCoptersDrawer(OtherCopterListener):
     def draw_copters(self, other_copters_closest_points):
         size = 5 / 2
         for point in other_copters_closest_points:
-            # size = point.radius - 0.5
-            # point = point.center
-            x = point.x.round()
-            y = point.y.round()
+            x = point.x
+            y = point.y
             y = self.point_helper.invert_y(y)
             drawn_copter = self.canvas.create_oval(
                 x - size, y - size,
