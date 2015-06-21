@@ -1,10 +1,12 @@
+import copy
 from Looper import Looper
 from copter.Copter import Copter
 from copter.CopterSwarm import CopterSwarm
 from copter.behaviour.FleeFromEverythingBehaviour import FleeFromEverythingBehaviour
+from copter.behaviour.RandomDirectionBehaviour import RandomDirectionBehaviour
 from copter.positioning.Boundary import Boundary
 from copter.sensors.SensorMock import SensorMock
-from geometry.Point import Point
+from geometry.PointVector import PointVector
 from ui.AreaCanvas import AreaCanvas
 from ui.CopterUi import CopterUi
 from ui.DrawingFrame import DrawingFrame
@@ -16,14 +18,15 @@ class Main:
     BOUNDARY_WIDTH = 400
     HEIGHT = 250
 
-    SWARM_SIZE = 1
+    SWARM_SIZE = 2
 
     SENSOR_RANGE = 50
+    MAX_SPEED = 5
 
     def __init__(self):
         boundary_offset = 5
-        boundary = Boundary(Point(boundary_offset, boundary_offset),
-                            Point(self.BOUNDARY_WIDTH - boundary_offset, self.HEIGHT - boundary_offset))
+        boundary = Boundary(PointVector(boundary_offset, boundary_offset),
+                            PointVector(self.BOUNDARY_WIDTH - boundary_offset, self.HEIGHT - boundary_offset))
         copters = self.__create_copters(self.SWARM_SIZE, boundary)
         copter_swarm = CopterSwarm(copters)
         self.looper = Looper(1 / 24, copters)
@@ -32,7 +35,8 @@ class Main:
         self.__init_ui(boundary, copters)
 
     def __create_copters(self, amount, boundary):
-        behaviour = FleeFromEverythingBehaviour()
+        acceleration = self.MAX_SPEED / 5
+        behaviour = FleeFromEverythingBehaviour(RandomDirectionBehaviour(acceleration, self.MAX_SPEED))
         sensor = None
         copters = []
 
@@ -40,8 +44,8 @@ class Main:
         center_x = (boundary.lower_left.x + boundary.upper_right.x) / 2 - (amount / 2) * copter_offset
         center_y = (boundary.lower_left.y + boundary.upper_right.y) / 2
         for i in range(amount):
-            position = Point(center_x + i * copter_offset, center_y)
-            copter = Copter(sensor, behaviour, position, boundary)
+            position = PointVector(center_x + i * copter_offset, center_y)
+            copter = Copter(sensor, copy.deepcopy(behaviour), position, boundary, self.MAX_SPEED)
             copters.append(copter)
         # update sensors
         for i in range(amount):

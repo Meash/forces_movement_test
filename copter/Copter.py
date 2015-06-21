@@ -6,13 +6,13 @@ __author__ = 'Martin'
 
 
 class Copter(Changeable, ObstacleDetector, OtherCopterDetector):
-    def __init__(self, sensor, behaviour, position, boundary):
+    def __init__(self, sensor, behaviour, position, boundary, max_speed):
         Changeable.__init__(self)
         ObstacleDetector.__init__(self)
         OtherCopterDetector.__init__(self)
         self.behaviour = behaviour
         self.size = 10
-        self.speed = 5
+        self.max_speed = max_speed
         self.position = position
         self.boundary = boundary
         self.sensor = sensor
@@ -22,10 +22,10 @@ class Copter(Changeable, ObstacleDetector, OtherCopterDetector):
         super().on_obstacles_update(obstacle_closest_points)
         super().on_other_copters_update(other_copters_closest_points)
         direction = self.behaviour.update(self.position, other_copters_closest_points, obstacle_closest_points)
-        modifier_x = +1 if direction.x > self.position.x else -1
-        modifier_y = +1 if direction.y > self.position.y else -1
-        self.position.x += self.speed * modifier_x
-        self.position.y += self.speed * modifier_y
+        distance_len = direction.len()
+        if distance_len > self.max_speed:
+            direction = direction.scale(self.max_speed / distance_len)
+        self.position += direction
         super().on_change()
 
     def set_behaviour(self, behaviour):

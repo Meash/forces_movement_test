@@ -17,5 +17,5 @@ setup(
     author_email='',
     description='',
 
-    install_requires=['sympy']
+    install_requires=['shapely']
 )
