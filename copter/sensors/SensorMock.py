@@ -9,13 +9,14 @@ __author__ = 'Martin'
 
 
 class SensorMock(Sensor):
-    def __init__(self, sensor_range, boundary, other_copters):
+    def __init__(self, sensor_range, obstacles, other_copters):
         self.sensor_range = sensor_range
-        self.boundary_lines = self.get_boundary_lines(boundary)
+        self.obstacles = obstacles
         self.other_copters = other_copters
 
     def collect_obstacles_closest_points(self, position):
-        return self.get_closest_points(position, self.boundary_lines)
+        obstacle_entities = list(map(lambda obstacle: obstacle.geometric_entity, self.obstacles))
+        return self.get_closest_points(position, obstacle_entities)
 
     def collect_other_copters_closest_points(self, position):
         other_copters_circles = self.get_copters_circles(self.other_copters)
@@ -48,8 +49,8 @@ class SensorMock(Sensor):
             p1 = line_coords[0]
             if len(line_coords) == 2:
                 p2 = line_coords[1]
-                sum = (p1[0] + p2[0], p1[1] + p2[1])
-                result = PointVector(sum[0] / 2, sum[1] / 2)
+                points_sum = (p1[0] + p2[0], p1[1] + p2[1])
+                result = PointVector(points_sum[0] / 2, points_sum[1] / 2)
                 return result
             elif len(line_coords) == 1:
                 return PointVector(p1[0], p1[1])
@@ -59,22 +60,6 @@ class SensorMock(Sensor):
             return None
         else:
             raise ValueError("Unknown type {}".format(intersection.__class__.__name__))
-
-    @staticmethod
-    def get_boundary_lines(boundary):
-        ll = boundary.lower_left
-        ul = boundary.upper_left
-        ur = boundary.upper_right
-        lr = boundary.lower_right
-        boundary_lines = [Line(PointVector(ll.x, ll.y),
-                               PointVector(ul.x, ul.y)),
-                          Line(PointVector(ul.x, ul.y),
-                               PointVector(ur.x, ur.y)),
-                          Line(PointVector(ur.x, ur.y),
-                               PointVector(lr.x, lr.y)),
-                          Line(PointVector(lr.x, lr.y),
-                               PointVector(ll.x, ll.y))]
-        return boundary_lines
 
     @staticmethod
     def get_copters_circles(other_copters):

@@ -6,7 +6,7 @@ __author__ = 'Martin'
 
 
 class Copter(Changeable, ObstacleDetector, OtherCopterDetector):
-    def __init__(self, sensor, behaviour, position, boundary, max_speed):
+    def __init__(self, sensor, behaviour, position, max_speed):
         Changeable.__init__(self)
         ObstacleDetector.__init__(self)
         OtherCopterDetector.__init__(self)
@@ -14,7 +14,6 @@ class Copter(Changeable, ObstacleDetector, OtherCopterDetector):
         self.size = 10
         self.max_speed = max_speed
         self.position = position
-        self.boundary = boundary
         self.sensor = sensor
 
     def update(self):
