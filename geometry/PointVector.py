@@ -32,14 +32,11 @@ class PointVector(Entity):
         else:
             raise TypeError("unsupported operand type(s) for /: '{}' and '{}'".format(self.__class__, type(other)))
 
-    def __len__(self):
+    def length(self):
         return sqrt(self.x * self.x + self.y * self.y)
 
-    def len(self):
-        return self.__len__()
-
     def scale(self, scale):
-        return PointVector(self.x * scale, self.y * scale)
+        return self * scale
 
     def distance(self, p2):
         return sqrt((self.x - p2.x) * (self.x - p2.x)

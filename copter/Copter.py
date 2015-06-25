@@ -22,7 +22,7 @@ class Copter(Changeable, ObstacleDetector, OtherCopterDetector):
         super().on_obstacles_update(obstacle_closest_points)
         super().on_other_copters_update(other_copters_closest_points)
         direction = self.behaviour.update(self.position, other_copters_closest_points, obstacle_closest_points)
-        distance_len = direction.len()
+        distance_len = direction.length()
         if distance_len > self.max_speed:
             direction = direction.scale(self.max_speed / distance_len)
         self.position += direction
