@@ -1,8 +1,11 @@
 import copy
+
 from Looper import Looper
 from copter.Copter import Copter
 from copter.CopterSwarm import CopterSwarm
 from copter.behaviour.FleeFromEverythingBehaviour import FleeFromEverythingBehaviour
+from copter.behaviour.MoveToTargetBehaviour import MoveToTargetBehaviour
+from copter.behaviour.MoveToTargetFleeBehaviour import MoveToTargetFleeBehaviour
 from copter.behaviour.RandomDirectionBehaviour import RandomDirectionBehaviour
 from copter.positioning.Boundary import Boundary
 from copter.sensors.SensorMock import SensorMock
@@ -15,10 +18,10 @@ __author__ = 'Martin'
 
 
 class Main:
-    BOUNDARY_WIDTH = 400
-    HEIGHT = 250
+    BOUNDARY_WIDTH = 800
+    HEIGHT = 600
 
-    SWARM_SIZE = 2
+    SWARM_SIZE = 10
 
     SENSOR_RANGE = 50
     MAX_SPEED = 5
@@ -36,13 +39,16 @@ class Main:
 
     def __create_copters(self, amount, boundary):
         acceleration = self.MAX_SPEED / 5
-        behaviour = FleeFromEverythingBehaviour(RandomDirectionBehaviour(acceleration, self.MAX_SPEED))
+        # behaviour = FleeFromEverythingBehaviour(RandomDirectionBehaviour(acceleration, self.MAX_SPEED))
+        targetPoint = PointVector(2 / 3 * self.BOUNDARY_WIDTH, 2 / 3 * self.HEIGHT)
+        # behaviour = MoveToTargetBehaviour(targetPoint)
+        behaviour = MoveToTargetFleeBehaviour(targetPoint)
         sensor = None
         copters = []
 
         copter_offset = 15
-        center_x = (boundary.lower_left.x + boundary.upper_right.x) / 2 - (amount / 2) * copter_offset
-        center_y = (boundary.lower_left.y + boundary.upper_right.y) / 2
+        center_x = (boundary.lower_left.x + boundary.upper_right.x) / 3 - (amount / 2) * copter_offset
+        center_y = (boundary.lower_left.y + boundary.upper_right.y) / 3
         for i in range(amount):
             position = PointVector(center_x + i * copter_offset, center_y)
             copter = Copter(sensor, copy.deepcopy(behaviour), position, boundary, self.MAX_SPEED)
