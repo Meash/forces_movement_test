@@ -1,5 +1,6 @@
 from math import sqrt
 import numbers
+from shapely.geometry import Point
 from geometry.Entity import Entity
 
 __author__ = 'Martin'
@@ -32,6 +33,9 @@ class PointVector(Entity):
         else:
             raise TypeError("unsupported operand type(s) for /: '{}' and '{}'".format(self.__class__, type(other)))
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
     def length(self):
         return sqrt(self.x * self.x + self.y * self.y)
 
@@ -53,7 +57,7 @@ class PointVector(Entity):
         return PointVector(func(self.x, other.x), func(self.y, other.y))
 
     def get_lib_conversion(self):
-        return self.x, self.y
+        return Point(self.x, self.y)
 
     def __str__(self):
         return "Point[x=" + str(self.x) + ",y=" + str(self.y) + "]"
