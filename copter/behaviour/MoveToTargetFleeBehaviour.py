@@ -9,6 +9,8 @@ class MoveToTargetFleeBehaviour(Behaviour):
         self.target = target
 
     def update(self, current_position, other_copters, obstacles):
+        if current_position == self.target:
+            return PointVector(0, 0)
         direction = PointVector(0, 0)
         vectors = []
         target_vec = self.target - current_position
