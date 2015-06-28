@@ -1,4 +1,5 @@
 import copy
+import threading
 
 from Looper import Looper
 from copter.Copter import Copter
@@ -18,20 +19,25 @@ __author__ = 'Martin'
 
 class Main:
     BOUNDARY_OFFSET = 5
-    BOUNDARY_WIDTH = 800
-    HEIGHT = 600
+    BOUNDARY_WIDTH = 600
+    BOUNDARY_HEIGHT = 400
 
-    SWARM_SIZE = 10
+    targetPoint = PointVector(2 / 3 * BOUNDARY_WIDTH, 2 / 3 * BOUNDARY_HEIGHT)
+
+    SWARM_SIZE = 5
 
     SENSOR_RANGE = 50
     MAX_SPEED = 5
 
     def __init__(self):
         boundary = Boundary(PointVector(self.BOUNDARY_OFFSET, self.BOUNDARY_OFFSET),
-                            PointVector(self.BOUNDARY_WIDTH - self.BOUNDARY_OFFSET, self.HEIGHT - self.BOUNDARY_OFFSET))
+                            PointVector(self.BOUNDARY_WIDTH - self.BOUNDARY_OFFSET,
+                                        self.BOUNDARY_HEIGHT - self.BOUNDARY_OFFSET))
         start_pos = PointVector((boundary.lower_left.x + boundary.upper_right.x) / 3,
                                 (boundary.lower_left.y + boundary.upper_right.y) / 3)
         obstacles = self.get_boundary_lines(boundary)
+        obstacles.append(Obstacle(Rectangle(PointVector(self.BOUNDARY_WIDTH / 2, self.BOUNDARY_HEIGHT / 2),
+                                            PointVector(self.BOUNDARY_WIDTH / 2 + 100, self.BOUNDARY_HEIGHT / 2 + 50))))
 
         copters = self.__create_copters(self.SWARM_SIZE, start_pos, obstacles)
         copter_swarm = CopterSwarm(copters)
@@ -43,9 +49,8 @@ class Main:
     def __create_copters(self, amount, start_pos, obstacles):
         acceleration = self.MAX_SPEED / 5
         # behaviour = FleeFromEverythingBehaviour(RandomDirectionBehaviour(acceleration, self.MAX_SPEED))
-        targetPoint = PointVector(2 / 3 * self.BOUNDARY_WIDTH, 2 / 3 * self.HEIGHT)
         # behaviour = MoveToTargetBehaviour(targetPoint)
-        behaviour = MoveToTargetFleeBehaviour(targetPoint)
+        behaviour = MoveToTargetFleeBehaviour(self.targetPoint)
         sensor = None
         copters = []
 
@@ -90,11 +95,11 @@ class Main:
     def __init_ui(self, obstacles, copters):
         self.root = DrawingFrame()
         self.root.wm_title("PuLiCopter - forces_movement_test")
-        geometry_string = str(self.BOUNDARY_WIDTH) + "x" + str(self.HEIGHT)
+        geometry_string = str(self.BOUNDARY_WIDTH) + "x" + str(self.BOUNDARY_HEIGHT)
         self.root.geometry(geometry_string)
 
-        canvas = AreaCanvas(self.root, obstacles,
-                            width=self.BOUNDARY_WIDTH, height=self.HEIGHT)
+        canvas = AreaCanvas(self.root, obstacles, self.targetPoint,
+                            width=self.BOUNDARY_WIDTH, height=self.BOUNDARY_HEIGHT)
         self.__create_copters_uis(canvas, copters)
 
         canvas.pack()
